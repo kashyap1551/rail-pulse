@@ -1,0 +1,1268 @@
+/* ---------- Design tokens ---------- */
+:root {
+  --ink: #060d12;                    /* near-black with a teal tint */
+  --panel: rgba(7, 16, 22, 0.9);
+  --panel-solid: #08141b;
+  --line: rgba(160, 215, 230, 0.22);
+  --text: #eaf6fb;
+  --muted: #93adb9;
+  --accent: #2ee6ff;
+  --ok: #5dffa0;
+  --late: #ffc247;
+  --bad: #ff6b81;
+}
+
+/* ---------- Page ---------- */
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* 100vh first as a fallback; 100dvh avoids the phone address bar cutting the map off */
+#map {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--ink);
+}
+
+/* ---------- Map colour: dark teal sea, near-black land ---------- */
+.leaflet-tile-pane {
+  filter: sepia(1) hue-rotate(150deg) saturate(1.8) brightness(1.2);
+}
+
+/* ---------- Stats panel (top-left; zoom buttons are top-right) ---------- */
+#panel {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1000; /* above the map layers */
+  box-sizing: border-box;
+  width: 236px;
+  max-width: calc(100vw - 80px); /* always leaves room for the zoom buttons */
+  padding: 12px 14px;
+  background: var(--panel);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+#panel h1 {
+  flex: 1;
+  margin: 0;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+.logo {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 4px var(--accent));
+}
+
+#panel-toggle {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#panel-toggle svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s;
+}
+
+#panel.is-collapsed #panel-toggle svg {
+  transform: rotate(-90deg);
+}
+
+#panel.is-collapsed #legend-wrap {
+  display: none;
+}
+
+/* "Is it bad right now?": share of passenger trains on time / 5+ min late */
+#network {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+#net-line {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+#net-line b {
+  white-space: nowrap; /* if the line wraps, it wraps between the two figures, not inside one */
+}
+
+#net-bar {
+  display: flex;
+  height: 6px;
+  margin-top: 6px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+#net-bar i {
+  display: block;
+  height: 100%;
+}
+
+#net-bar .ok {
+  background: var(--ok);
+}
+
+#net-bar .late {
+  background: var(--late);
+}
+
+#net-bar .bad {
+  background: var(--bad);
+}
+
+#net-note {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.stats {
+  margin: 0;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stat-label {
+  color: var(--muted);
+}
+
+.stat-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* the small "i" button next to Moving */
+.info-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  padding: 0;
+  font-size: 10px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+  vertical-align: 1px;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--muted);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.info-btn:hover,
+.info-btn[aria-expanded='true'] {
+  color: var(--ink);
+  background: var(--text);
+  border-color: var(--text);
+}
+
+.info-note {
+  margin: 4px 0 6px;
+  padding: 6px 8px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.info-note[hidden] {
+  display: none;
+}
+
+#legend-wrap {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+/* "Colour trains by: Type | Delay" */
+.seg {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.seg-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.seg-buttons {
+  display: inline-flex;
+  padding: 2px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+
+.seg-buttons button {
+  padding: 3px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  background: none;
+  border: 0;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.seg-buttons button.is-on {
+  color: var(--ink);
+  font-weight: 600;
+  background: var(--text);
+}
+
+#legend-wrap h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0 0 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+#legend-wrap h2 b {
+  font-weight: 600;
+}
+
+#legend-wrap h2 span {
+  font-size: 10px;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.8;
+}
+
+#legend {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: calc(100dvh - 440px);
+  min-height: 96px;
+  overflow-y: auto;
+}
+
+/* The one-line key under the legend: what the arrow and the hollow square mean */
+.key span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap; /* each icon stays with its words */
+}
+
+.key {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  margin: 8px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.key-arrow {
+  width: 12px;
+  height: 12px;
+  fill: var(--text);
+  stroke: var(--muted);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+/* the same hollow square the map draws for a stopped train (here in a neutral colour: it works in both colour modes) */
+.key-square {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid var(--text);
+  border-radius: 1px;
+}
+
+.key-sep {
+  opacity: 0.6;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 4px;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.legend-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* a small bar, not a circle: a circle would look like a train marker */
+.legend-item .swatch {
+  width: 14px;
+  height: 4px;
+  flex: none;
+  border-radius: 2px;
+  background: rgb(var(--rgb));
+  box-shadow: 0 0 6px 0 rgba(var(--rgb), 0.8);
+}
+
+.legend-item .legend-name {
+  flex: 1;
+}
+
+.legend-item .legend-count {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.legend-item.is-off {
+  opacity: 0.4;
+}
+
+.legend-item.is-off .swatch {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgb(var(--rgb));
+}
+
+.legend-item.is-off .legend-name {
+  text-decoration: line-through;
+}
+
+#status {
+  margin: 10px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  font-weight: 600;
+  color: var(--late);
+}
+
+@media (max-width: 480px) {
+  #panel {
+    top: 8px;
+    left: 8px;
+    width: 200px;
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+
+/* ---------- Leaflet controls restyled to match ---------- */
+.leaflet-container {
+  background: var(--ink);
+}
+
+.leaflet-bar,
+.leaflet-touch .leaflet-bar {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.leaflet-bar a {
+  background-color: var(--panel-solid);
+  color: var(--text);
+  border-bottom: 1px solid var(--line);
+}
+
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+  background-color: #12303d;
+  color: var(--text);
+}
+
+.leaflet-bar a.leaflet-disabled {
+  background-color: var(--panel-solid);
+  color: #4b6370;
+}
+
+.leaflet-container .leaflet-control-attribution {
+  background: rgba(6, 13, 18, 0.8);
+  color: var(--muted);
+}
+
+.leaflet-container .leaflet-control-attribution a {
+  color: var(--text);
+}
+
+.leaflet-tooltip {
+  background: var(--panel-solid);
+  color: var(--text);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+
+.leaflet-tooltip-top::before {
+  border-top-color: var(--line);
+}
+
+/* ---------- Train markers: neon, coloured by train type ---------- */
+.train-icon {
+  --rgb: 223, 230, 243; /* overridden per train type from app.js */
+  background: none;
+  border: none;
+}
+
+.train-icon .glow,
+.train-icon .arrow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+
+/* Moving train, heading not known yet: a glowing orb */
+.train-icon .glow {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 30%, rgb(var(--rgb)) 75%);
+  box-shadow:
+    0 0 3px 1px rgba(var(--rgb), 0.95),
+    0 0 9px 3px rgba(var(--rgb), 0.8),
+    0 0 20px 6px rgba(var(--rgb), 0.4);
+}
+
+/* Moving train with a known direction: a glowing arrowhead */
+.train-icon .arrow {
+  display: none;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  fill: #fff;
+  stroke: rgb(var(--rgb));
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 2px rgb(var(--rgb))) drop-shadow(0 0 7px rgb(var(--rgb)));
+  transition: transform 0.5s ease;
+}
+
+.train-icon.has-heading .glow {
+  display: none;
+}
+
+.train-icon.has-heading .arrow {
+  display: block;
+}
+
+/* The glow shrinks and dims as you zoom out, in two steps, so hundreds of trains in one place
+   (the Helsinki commuter trains) stay separate dots instead of merging into one blob.
+   .zoom-mid is regional zoom (about 6 to 7); .zoom-far is the whole country and further out. */
+.zoom-mid .train-icon .glow {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  box-shadow: 0 0 2px 1px rgba(var(--rgb), 0.85), 0 0 6px 1px rgba(var(--rgb), 0.35);
+}
+
+.zoom-mid .train-icon .arrow {
+  width: 15px;
+  height: 15px;
+  margin: -7.5px 0 0 -7.5px;
+  filter: drop-shadow(0 0 2px rgba(var(--rgb), 0.8));
+}
+
+.zoom-far .train-icon .glow {
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  opacity: 0.85;
+  box-shadow: 0 0 1px 0 rgba(var(--rgb), 0.7); /* no outer halo at all */
+}
+
+.zoom-far .train-icon .arrow {
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  stroke-width: 2;
+  opacity: 0.85;
+  filter: none;
+}
+
+/* Stopped train: a small hollow square outlined in the train's colour (like a stop button), no glow.
+   A square can't be mistaken for a grey service train, which would be a dot. */
+.train-icon.is-stopped .glow {
+  display: block;
+  box-sizing: border-box;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  background: rgba(6, 13, 18, 0.55); /* a faint dark fill so the outline reads on any map colour */
+  border: 1.5px solid rgb(var(--rgb));
+  border-radius: 1px;
+  opacity: 1;
+  box-shadow: none;
+}
+
+.train-icon.is-stopped .arrow {
+  display: none;
+}
+
+.zoom-mid .train-icon.is-stopped .glow {
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  box-shadow: none;
+}
+
+.zoom-far .train-icon.is-stopped .glow {
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-width: 1px;
+  opacity: 0.9;
+  box-shadow: none;
+}
+
+/* Hidden by the legend filter */
+.train-icon.is-hidden {
+  display: none;
+}
+
+/* While a route is open, the selected train stands out and the rest fade back */
+#map.route-open .train-icon:not(.is-selected) {
+  opacity: 0.25;
+}
+
+.train-icon.is-selected::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border: 1.5px solid rgb(var(--rgb));
+  border-radius: 50%;
+  animation: ping 1.8s ease-out infinite;
+}
+
+@keyframes ping {
+  from {
+    transform: scale(0.6);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .train-icon.is-selected::after {
+    animation: none;
+  }
+
+  .train-icon .arrow {
+    transition: none;
+  }
+}
+
+/* ---------- Click popup card ---------- */
+.train-popup .leaflet-popup-content-wrapper {
+  padding: 0;
+  overflow: hidden;
+  background: var(--panel-solid);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
+}
+
+.train-popup .leaflet-popup-content {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.train-popup .leaflet-popup-tip {
+  background: var(--panel-solid);
+  box-shadow: none;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  top: 10px;
+  right: 10px;
+  color: var(--muted);
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: var(--text);
+}
+
+.tp-card {
+  --rgb: 223, 230, 243;
+  padding: 14px 16px 14px;
+  border-top: 3px solid rgb(var(--rgb));
+  box-shadow: inset 0 18px 24px -20px rgba(var(--rgb), 0.55);
+}
+
+.tp-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 22px; /* room for the close button */
+}
+
+.badge {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  color: rgb(var(--rgb));
+  background: rgba(var(--rgb), 0.14);
+  border: 1.5px solid rgb(var(--rgb));
+  border-radius: 50%;
+  box-shadow: 0 0 14px rgba(var(--rgb), 0.55), inset 0 0 10px rgba(var(--rgb), 0.25);
+}
+
+.badge svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+.tp-title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.tp-sub {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.tp-route {
+  margin: 14px 0 12px;
+}
+
+.tp-ends {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.tp-ends span:last-child {
+  text-align: right;
+}
+
+.tp-progress {
+  position: relative;
+  height: 4px;
+  margin: 8px 0 0;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 2px;
+}
+
+.tp-progress > i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: rgb(var(--rgb));
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(var(--rgb), 0.9);
+}
+
+.tp-progress > b {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px 2px rgb(var(--rgb));
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tile {
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+}
+
+.tile-label {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tile-value {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tile.wide {
+  grid-column: 1 / -1;
+}
+
+.tile.wide .tile-value {
+  font-size: 15px;
+}
+
+.d-ok {
+  color: var(--ok);
+}
+
+.d-late {
+  color: var(--late);
+}
+
+.d-bad {
+  color: var(--bad);
+}
+
+.tp-btn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 9px 12px;
+  font-weight: 600;
+  color: var(--text);
+  background: rgba(var(--rgb), 0.16);
+  border: 1px solid rgba(var(--rgb), 0.65);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.tp-btn:hover:not(:disabled) {
+  background: rgba(var(--rgb), 0.3);
+}
+
+.tp-btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.tp-note {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* ---------- Full-route panel ---------- */
+#route {
+  position: absolute;
+  z-index: 1100;
+  top: 84px;     /* below the zoom buttons */
+  right: 12px;
+  bottom: calc(var(--credit-h, 20px) + 12px); /* always above the map credits (--credit-h is measured in app.js) */
+  box-sizing: border-box;
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  font-size: 13px;
+}
+
+#route[hidden] {
+  display: none;
+}
+
+#route-head {
+  --rgb: 223, 230, 243;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px 12px;
+  border-top: 3px solid rgb(var(--rgb));
+}
+
+#route-head .head-text {
+  flex: 1;
+  min-width: 0;
+}
+
+#route-close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#route-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#route-tiles {
+  padding: 0 14px 10px;
+}
+
+#route-tiles .tiles {
+  margin-top: 0;
+  grid-template-columns: 1fr 1fr;
+}
+
+#route-stops {
+  flex: 1;
+  margin: 0;
+  padding: 4px 14px 16px 16px;
+  list-style: none;
+  overflow-y: auto;
+  border-top: 1px solid var(--line);
+}
+
+.stop {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  padding: 9px 0 9px 28px;
+}
+
+/* the line down the left, and the dot on it */
+.stop::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.stop:first-child::before {
+  top: 22px;
+}
+
+.stop:last-child::before {
+  bottom: calc(100% - 22px);
+}
+
+.stop.passed::before,
+.stop.at::before {
+  background: rgba(var(--rgb), 0.85);
+  box-shadow: 0 0 8px rgba(var(--rgb), 0.7);
+}
+
+.stop .dot {
+  position: absolute;
+  left: 0;
+  top: 15px;
+  width: 14px;
+  height: 14px;
+  box-sizing: border-box;
+  background: var(--ink);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+}
+
+.stop.passed .dot,
+.stop.at .dot {
+  background: rgb(var(--rgb));
+  border-color: rgb(var(--rgb));
+}
+
+.stop.next .dot {
+  border-color: #fff;
+  box-shadow: 0 0 10px 2px rgb(var(--rgb));
+}
+
+.stop-name {
+  font-weight: 600;
+}
+
+.stop.passed .stop-name {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.stop-track {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: right;
+}
+
+.stop-times {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 14px;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stop-flag {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgb(var(--rgb));
+}
+
+.cancelled {
+  text-decoration: line-through;
+}
+
+/* The route drawn on the map */
+.route-line {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.route-ahead {
+  filter: drop-shadow(0 0 4px rgb(var(--rgb))); /* --rgb is set on #map when a route opens */
+}
+
+/* phones: the route panel becomes a sheet at the bottom */
+@media (max-width: 640px) {
+  #route {
+    top: auto;
+    left: 8px;
+    right: 8px;
+    bottom: calc(var(--credit-h, 20px) + 8px);
+    max-height: calc(100dvh - var(--credit-h, 20px) - 24px);
+    width: auto;
+    height: 52vh;
+    height: 52dvh;
+  }
+
+  /* keep the stop list roomy: drop the wide "next stop" tile (the list shows it) */
+  #route-tiles .tile.wide {
+    display: none;
+  }
+
+  #route-tiles {
+    padding-bottom: 8px;
+  }
+
+  #route-tiles .tile-value {
+    font-size: 16px;
+  }
+}
+
+/* ---------- Pulse line: trains moving since you opened the page ---------- */
+.pulse {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.pulse-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 12px;
+}
+
+.pulse-head b {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.pulse-head span {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+#pulse-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 2px 0;
+}
+
+.pulse-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.pulse-dot {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 3px var(--accent));
+}
+
+.pulse-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Card buttons: "View full route" and "Copy link" ---------- */
+.tp-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tp-actions .tp-btn {
+  width: auto;
+  margin-top: 0;
+  flex: 1 1 auto;
+}
+
+.tp-actions .tp-btn-quiet {
+  flex: 0 0 auto;
+  background: transparent;
+  border-color: var(--line);
+}
+
+.tp-actions .tp-btn-quiet:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- Notice (for example: a shared train isn't running any more) ---------- */
+#notice {
+  position: absolute;
+  z-index: 1200;
+  left: 50%;
+  bottom: calc(var(--credit-h, 20px) + 14px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-sizing: border-box;
+  max-width: min(92vw, 420px);
+  margin: 0;
+  padding: 6px 6px 6px 14px;
+  transform: translateX(-50%);
+  background: var(--panel-solid);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+  font-size: 13px;
+}
+
+#notice[hidden] {
+  display: none;
+}
+
+#notice button {
+  flex: none;
+  min-width: 32px;
+  min-height: 32px;
+  font-size: 20px;
+  line-height: 1;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* ---------- Grab handle on the route sheet (phones): pull down to close ---------- */
+#route-grab {
+  display: none;
+  position: relative;
+  flex: none;
+  height: 22px;
+  touch-action: none;
+}
+
+#route-grab::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  width: 40px;
+  height: 5px;
+  margin-left: -20px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+@media (max-width: 640px) {
+  #route-grab {
+    display: block;
+  }
+
+  #route-head,
+  #route-grab {
+    touch-action: none; /* a vertical drag here moves the sheet instead of scrolling the page */
+  }
+}
+
+/* ---------- Phones and touch screens: every tap target at least 44 px ---------- */
+@media (pointer: coarse), (max-width: 640px) {
+  #panel {
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
+  }
+
+  #panel-toggle,
+  #route-close {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* the small "i" keeps its look but gets a 44 px tap area around it */
+  .info-btn {
+    position: relative;
+  }
+
+  .info-btn::after {
+    content: '';
+    position: absolute;
+    inset: -14px;
+  }
+
+  .legend-item {
+    min-height: 44px;
+  }
+
+  .seg-buttons button {
+    min-width: 64px;
+    min-height: 44px;
+  }
+
+  .tp-btn {
+    min-height: 44px;
+  }
+
+  #notice button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .tp-head {
+    padding-right: 34px; /* room for the bigger close button */
+  }
+
+  .leaflet-container a.leaflet-popup-close-button {
+    top: 0;
+    right: 0;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    font-size: 26px;
+    line-height: 44px;
+  }
+
+  .leaflet-touch .leaflet-bar a,
+  .leaflet-bar a {
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+  }
+
+  .leaflet-touch .leaflet-control-zoom-in,
+  .leaflet-touch .leaflet-control-zoom-out {
+    font-size: 24px;
+  }
+
+  /* the train markers: a 44 px area to tap (the dot or arrow drawn inside stays small) */
+  .train-icon {
+    width: 44px !important;
+    height: 44px !important;
+    margin-left: -22px !important;
+    margin-top: -22px !important;
+  }
+}
+
+/* ---------- Route panel: where the train goes, and Copy link ---------- */
+#route-head .route-trip {
+  margin-top: 2px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.route-actions {
+  margin-top: 8px;
+}
+
+.route-actions .tp-btn {
+  width: 100%;
+  margin-top: 0;
+}

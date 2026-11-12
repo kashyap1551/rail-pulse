@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rail Pulse</title>
+  <meta name="description" content="A live map of every train in Finland that reports its position, refreshed every 15 seconds from Fintraffic's open data.">
+  <meta name="theme-color" content="#060d12">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="map"></div>
+
+  <aside id="panel">
+    <header class="panel-head">
+      <svg class="logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12h4l2.5-6.5 4 13 2.5-6.5H22"/></svg>
+      <h1>Rail Pulse</h1>
+      <button id="panel-toggle" type="button" aria-expanded="true" aria-controls="legend-wrap" title="Show or hide train types">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </header>
+    <section id="network" aria-live="polite" aria-label="Network status right now">
+      <div id="net-line">Right now: …</div>
+      <div id="net-bar" aria-hidden="true"><i class="ok"></i><i class="late"></i><i class="bad"></i></div>
+      <p id="net-note"></p>
+    </section>
+    <div class="stats">
+      <div class="stat-row"><span class="stat-label">Trains reporting</span><span class="stat-value" id="stat-total">–</span></div>
+      <div class="stat-row">
+        <span class="stat-label">Moving
+          <button id="moving-info-btn" class="info-btn" type="button" aria-expanded="false" aria-controls="moving-info" aria-label="What does Moving mean?">i</button>
+        </span>
+        <span class="stat-value" id="stat-moving">–</span>
+      </div>
+      <p id="moving-info" class="info-note" hidden>Trains with speed above 0 km/h. Numbers drop sharply at night, when most passenger trains don't run.</p>
+      <div class="stat-row"><span class="stat-label">Fastest</span><span class="stat-value" id="stat-fastest">–</span></div>
+      <div class="stat-row"><span class="stat-label" title="Time of the newest train report in the data">Updated (Finland)</span><span class="stat-value" id="stat-updated">–</span></div>
+    </div>
+    <div id="legend-wrap">
+      <div class="pulse">
+        <div class="pulse-head"><b>Trains moving</b><span id="pulse-now">–</span></div>
+        <svg id="pulse-chart" viewBox="0 0 200 44" role="img" aria-label="Trains moving over time: collecting data"></svg>
+        <div class="pulse-foot"><span>since you opened the page</span><span id="pulse-range"></span></div>
+      </div>
+      <div class="seg" role="group" aria-label="Colour trains by">
+        <span class="seg-label">Colour trains by</span>
+        <span class="seg-buttons">
+          <button id="mode-type" type="button" aria-pressed="true">Type</button>
+          <button id="mode-delay" type="button" aria-pressed="false">Delay</button>
+        </span>
+      </div>
+      <h2><b id="legend-title">Train types</b> <span>all trains · click to hide</span></h2>
+      <ul id="legend"></ul>
+      <p class="key">
+        <span title="The arrow points the way the train is heading"><svg class="key-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 L20 21 L12 16.5 L4 21 Z"/></svg>Moving</span>
+        <span class="key-sep" aria-hidden="true">·</span>
+        <span><i class="key-square" aria-hidden="true"></i>Stopped</span>
+      </p>
+    </div>
+    <p id="status" role="status" hidden>Couldn't load data, retrying…</p>
+  </aside>
+
+  <p id="notice" role="status" hidden></p>
+
+  <aside id="route" aria-label="Full route of the selected train" hidden>
+    <div id="route-grab" aria-hidden="true"></div>
+    <header id="route-head"></header>
+    <div id="route-tiles"></div>
+    <ol id="route-stops"></ol>
+  </aside>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
