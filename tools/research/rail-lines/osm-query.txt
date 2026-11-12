@@ -1,0 +1,4 @@
+[out:json][timeout:240];
+area["ISO3166-1"="FI"][admin_level=2]->.fi;
+way["railway"="rail"][!"service"](area.fi);
+out geom;
