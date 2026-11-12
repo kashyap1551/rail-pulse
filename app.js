@@ -2,9 +2,15 @@ const API_BASE = 'https://rata.digitraffic.fi/api/v1';
 const LOCATIONS_URL = API_BASE + '/train-locations/latest';
 const GRAPHQL_URL = 'https://rata.digitraffic.fi/api/v2/graphql/graphql';
 
-// Free CARTO basemaps key (request one at https://carto.com/basemaps/apikey). It is meant to be
-// public: it ends up in the page source, so it is committed to the repo on purpose.
-const CARTO_KEY = 'cb1_56cb_1_2d69dedfcd17afdbb965d1a8';
+// Free CARTO basemaps keys (request one at https://carto.com/basemaps/apikey). They are meant to be public:
+// they end up in the page source, so they are committed to the repo on purpose. The live key is restricted
+// in CARTO's dashboard to the live site (kashyap1551.github.io). A restricted key is refused on this
+// computer, so testing with Live Server uses a second key, CARTO_KEY_LOCAL. While that is empty, this
+// computer uses the live key (which works until the restriction is switched on).
+const CARTO_KEY_LIVE = 'cb1_56cb_1_2d69dedfcd17afdbb965d1a8';
+const CARTO_KEY_LOCAL = '';
+const ON_THIS_COMPUTER = ['localhost', '127.0.0.1'].includes(location.hostname);
+const CARTO_KEY = ON_THIS_COMPUTER && CARTO_KEY_LOCAL ? CARTO_KEY_LOCAL : CARTO_KEY_LIVE;
 const TILE_URL = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=' + CARTO_KEY;
 
 const REFRESH_MS = 15000;       // trains report about every 15 s
@@ -123,6 +129,7 @@ markZoomLevel();
 L.tileLayer(TILE_URL, {
   subdomains: 'abcd',
   maxZoom: 20,
+  referrerPolicy: 'strict-origin-when-cross-origin', // send this site's address (never a path) with every tile, so CARTO can check the key's site restriction
   noWrap: true, // draw the world once, not side by side
   bounds: WORLD,
   attribution:
