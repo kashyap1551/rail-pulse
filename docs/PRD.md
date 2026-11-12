@@ -1,6 +1,6 @@
 # Rail Pulse: PRD
 
-Version 9 · 12 Nov 2026 · Based on my opportunity assessment (docs/opportunity-assessment.md)
+Version 9 · 12 Nov 2026 (live at https://kashyap1551.github.io/rail-pulse/) · Based on my opportunity assessment (docs/opportunity-assessment.md)
 
 ## Problem
 People who follow Finland's railways can't tell at a glance whether trains across the whole country are running normally right now, especially during storms or strikes. (Hypothesis, not yet confirmed with real users.)
@@ -39,6 +39,7 @@ VR's "On track" page, Fintraffic's traffic-situation page and independent sites 
 21. Share a train: a "Copy link" button on the card and in the route panel. Opening the link (`?train=DATE-NUMBER`) centres the map on that train and opens its card. If the train is not running any more, a message says so (and why when Digitraffic can tell: finished its journey, cancelled, not started yet).
 22. The rail network is drawn as faint lines under the trains, from Digitraffic's track data (CC BY 4.0), simplified so lines stay within about 1 m of the source. It contains the lines trains actually run on, freight branches included, and no yard or siding tracks. It is made once by a script in `tools/` into `data/rail-network.json` (188 KB), which the page loads.
 23. A train's route follows the track: every timetable point the train passes (not only its stops) is joined to the next along the network, worked out once per train and kept. A stretch that cannot be matched is drawn dashed (so is every stretch if the network file cannot load). The train's position is snapped onto the route line and splits "done" from "ahead" at that point; only the split moves on a refresh, never the line's shape. A train more than 1 km from its route keeps its last split, and the split never moves backwards by less than 300 m (a smaller step back is noise: the train snapping to a neighbouring track).
+24. Pasting the address into a chat, post or forum shows a link preview: title "Rail Pulse: every train in Finland, live", a one-sentence description and a 1200 × 630 picture of the app (Open Graph and Twitter card tags in `index.html`, picture `preview.jpg`).
 
 ## Non-goals (v1)
 - The "now vs a normal evening" comparison and any history (v2).
