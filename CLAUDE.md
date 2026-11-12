@@ -31,7 +31,7 @@ Part 2:
 6. 15-second refresh without piling up dots, plus error message
 7. Polish: phone, contrast, zoom buttons don't cover panel
 8. Git: init, .gitignore, commits, repo `rail-pulse`, push, GitHub Pages, check live link, then add Open Graph link-preview tags (they need the live URL)
-9. README.md as a short product case study (problem, user, key decisions, what I'd do next)
+9. README.md as a short product case study (problem, user, key decisions, what I'd do next) (written 12 Nov; the user adds `docs/screenshot.png`)
 
 ## How we work
 - Claude makes all the edits. No exercises, quizzes or "make this change yourself" tasks.
@@ -47,8 +47,9 @@ Part 2:
 - Built, tested in headless Chrome and documented: everything in the Product section above. Latest batch (12 Nov): one profile at a time, five type colours, hollow-square stopped trains and bar legend swatches, status line with counts and three bands, GraphQL size in `railPulseHealth()`, and the accurate route lines (rail network, per-train routing, split). PRD is version 9; docs/decisions.md has a row for every choice and a findings entry with the route-accuracy numbers.
 - Still open: terrain map source (never chosen); testing on a real phone and Safari; a daytime check of the GraphQL answer size (`railPulseHealth()`); re-run `node tools/build-rail-network.js` now and then (new freight branches).
 - Git: pushed and live at https://kashyap1551.github.io/rail-pulse/ (12 Nov). Later commits (link preview, CARTO key split, docs) are local until the user pushes; Claude never pushes. Commit identity is set for this repo only (not `--global`): check with `git config --local user.name` and `user.email`. If the email is empty, ask for it; never use the user's real email or guess one. Commits end with the Claude co-author line (the user chose to keep it). Files were checked for personal details before publishing; keep them out of anything committed. `tools/.cache/` is git-ignored.
-- Then: the user pushes the latest commits, makes the second CARTO key and restricts the live one (then Claude checks with curl: tiles 200 with the live site as referrer, refused without it), tests on a phone, re-scrapes the link preview; Step 9 (README.md case study).
-- `app.js` contains the user's public CARTO key on the `CARTO_KEY` line. Never print or replace it.
+- Then: the user pushes, adds `docs/screenshot.png`, makes the second CARTO key (Claude puts it in `CARTO_KEY_LOCAL`) and restricts the live one (then Claude checks with curl: tiles 200 with the live site as referrer, refused without it), tests on a phone and in Safari (then update the README's "Not yet tested" line), and re-scrapes the link preview.
+- README rules: no personal details, no employer; keep the line "Built with Claude Code. My role was the product decisions, scope and testing."
+- `app.js` contains the user's public CARTO key on the `CARTO_KEY_LIVE` line. Never print or replace it.
 
 ## Later
 - v2: "now vs a normal evening" comparison (share of trains delayed tonight vs a typical evening). History source is confirmed (see docs/decisions.md). Build only if the mock-up test passes.
